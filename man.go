@@ -52,7 +52,6 @@ func (r *ratelimiter) LeakyBucket() map[string]LeakyBucketI {
 
 func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get the bucket
 		bucket, ok := r.leakyBuckets[Hash(c.Request.Method+c.FullPath())]
 		if !ok {
 			c.Next()
@@ -93,7 +92,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 
 func (r *ratelimiter) ParseJwt(c *gin.Context) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(c.GetHeader("Authorization"), func(token *jwt.Token) (interface{}, error) {
-		return r.jwtSignInKey, nil
+		return []byte(r.jwtSignInKey), nil
 	})
 	if err != nil {
 		return nil, err

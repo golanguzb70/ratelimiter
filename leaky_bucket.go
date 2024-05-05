@@ -80,6 +80,7 @@ func (l *leakyBucketService) AllowRequest(ctx context.Context, key string) bool 
 	result, err := l.RedisClient.Get(ctx, key).Int()
 	if err == redis.Nil {
 		l.RedisClient.Set(ctx, key, l.RequestLimit-1, timeDuration)
+		return true
 	} else if err != nil {
 		return l.AllowOnError
 	}
@@ -88,7 +89,7 @@ func (l *leakyBucketService) AllowRequest(ctx context.Context, key string) bool 
 		return false
 	}
 
-	l.RedisClient.DecrBy(ctx, key, 1).Err()
+	err = l.RedisClient.DecrBy(ctx, key, 1).Err()
 	if err != nil {
 		return l.AllowOnError
 	}
