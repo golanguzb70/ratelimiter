@@ -17,7 +17,7 @@ type Config struct {
 }
 
 type RateLimiterI interface {
-	LeakyBucket() map[string]LeakyBucketI
+	GinMiddleware() gin.HandlerFunc
 }
 
 type ratelimiter struct {
