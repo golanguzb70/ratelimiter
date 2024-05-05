@@ -64,7 +64,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 			if bucket.GetAllowOnError() {
 				c.Next()
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 				c.Abort()
 			}
 			return
@@ -75,7 +75,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 			if bucket.GetAllowOnError() {
 				c.Next()
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid jwt key"})
 				c.Abort()
 			}
 			return
