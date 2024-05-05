@@ -8,6 +8,16 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type LeakyBucket struct {
+	Method       string
+	Path         string
+	RequestLimit int
+	DurationType string
+	Type         string
+	JWTKey       string
+	AllowOnError bool
+}
+
 type LeakyBucketI interface {
 	AllowRequest(ctx context.Context, key string) bool
 	GetJwtKey() string
@@ -95,4 +105,23 @@ func (l *leakyBucketService) AllowRequest(ctx context.Context, key string) bool 
 	}
 
 	return true
+}
+
+func (l *LeakyBucket) Validate() (string, bool) {
+	switch l.Method {
+	case "GET", "POST", "PUT", "DELETE":
+	default:
+		return "Method must be one of GET, POST, PUT, DELETE", false
+	}
+
+	switch {
+	case l.RequestLimit < 1:
+		return "RequestLimit must be greater than 0", false
+	case l.DurationType != "second" && l.DurationType != "minute" && l.DurationType != "hour":
+		return "DurationType must be one of second, minute, hour", false
+	case l.Type != "ip" && l.Type != "jwt" && l.Type != "header" && l.Type != "query":
+		return "Type must be one of ip, jwt, header, query", false
+	}
+
+	return "", true
 }

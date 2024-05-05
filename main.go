@@ -58,26 +58,36 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims, err := r.ParseJwt(c)
-		if err != nil {
-			if bucket.GetAllowOnError() {
-				c.Next()
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-				c.Abort()
+		key := ""
+		switch bucket.GetType() {
+		case "header":
+			key = c.GetHeader(bucket.GetJwtKey())
+		case "ip":
+			key = c.ClientIP()
+		case "jwt":
+			claims, err := r.ParseJwt(c)
+			if err != nil {
+				if bucket.GetAllowOnError() {
+					c.Next()
+				} else {
+					c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+					c.Abort()
+				}
+				return
 			}
-			return
-		}
 
-		key, ok := claims[bucket.GetJwtKey()].(string)
-		if !ok {
-			if bucket.GetAllowOnError() {
-				c.Next()
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid jwt key"})
-				c.Abort()
+			key, ok = claims[bucket.GetJwtKey()].(string)
+			if !ok {
+				if bucket.GetAllowOnError() {
+					c.Next()
+				} else {
+					c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid jwt key"})
+					c.Abort()
+				}
+				return
 			}
-			return
+		case "query":
+			key = c.Query(bucket.GetJwtKey())
 		}
 
 		if !bucket.AllowRequest(c, key) {
