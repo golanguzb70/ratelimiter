@@ -12,6 +12,7 @@ type LeakyBucketI interface {
 	AllowRequest(ctx context.Context, key string) bool
 	GetJwtKey() string
 	GetType() string
+	GetAllowOnError() bool
 }
 
 type leakyBucketService struct {
@@ -51,6 +52,10 @@ func (l *leakyBucketService) GetType() string {
 
 func (l *leakyBucketService) GetJwtKey() string {
 	return l.JWTKey
+}
+
+func (l *leakyBucketService) GetAllowOnError() bool {
+	return l.AllowOnError
 }
 
 func (l *leakyBucketService) AllowRequest(ctx context.Context, key string) bool {
