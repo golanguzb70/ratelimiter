@@ -78,7 +78,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 		key := ""
 		switch bucket.GetType() {
 		case "header":
-			key = c.GetHeader(bucket.GetJwtKey())
+			key = c.GetHeader(bucket.GetKeyField())
 		case "ip":
 			key = c.ClientIP()
 		case "jwt":
@@ -93,7 +93,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 				return
 			}
 
-			key, ok = claims[bucket.GetJwtKey()].(string)
+			key, ok = claims[bucket.GetKeyField()].(string)
 			if !ok {
 				if bucket.GetAllowOnFailure() {
 					c.Next()
@@ -104,7 +104,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 				return
 			}
 		case "query":
-			key = c.Query(bucket.GetJwtKey())
+			key = c.Query(bucket.GetKeyField())
 		}
 
 		if !bucket.AllowRequest(c, key) {

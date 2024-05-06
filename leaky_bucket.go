@@ -14,13 +14,13 @@ type LeakyBucket struct {
 	RequestLimit   int    `yaml:"limit"`
 	Interval       string `yaml:"interval"`
 	Type           string `yaml:"type"`
-	JWTKey         string `yaml:"jwt_key"`
+	KeyField       string `yaml:"key_field"`
 	AllowOnFailure bool   `yaml:"allow_on_failure"`
 }
 
 type LeakyBucketI interface {
 	AllowRequest(ctx context.Context, key string) bool
-	GetJwtKey() string
+	GetKeyField() string
 	GetType() string
 	GetAllowOnFailure() bool
 }
@@ -31,7 +31,7 @@ type leakyBucketService struct {
 	RequestLimit   int
 	Interval       string
 	Type           string
-	JWTKey         string
+	KeyField       string
 	AllowOnFailure bool
 	Id             int
 	RedisClient    *redis.Client
@@ -48,7 +48,7 @@ func NewLeakyBucket(bucket *LeakyBucket, id int, redisClient *redis.Client) (Lea
 		Path:           bucket.Path,
 		RequestLimit:   bucket.RequestLimit,
 		Interval:       bucket.Interval,
-		JWTKey:         bucket.JWTKey,
+		KeyField:       bucket.KeyField,
 		AllowOnFailure: bucket.AllowOnFailure,
 		RedisClient:    redisClient,
 		Type:           bucket.Type,
@@ -60,8 +60,8 @@ func (l *leakyBucketService) GetType() string {
 	return l.Type
 }
 
-func (l *leakyBucketService) GetJwtKey() string {
-	return l.JWTKey
+func (l *leakyBucketService) GetKeyField() string {
+	return l.KeyField
 }
 
 func (l *leakyBucketService) GetAllowOnFailure() bool {
