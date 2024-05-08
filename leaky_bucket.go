@@ -16,6 +16,8 @@ type LeakyBucket struct {
 	Type           string `yaml:"type"`
 	KeyField       string `yaml:"key_field"`
 	AllowOnFailure bool   `yaml:"allow_on_failure"`
+	NotAllowMsg    string `yaml:"not_allow_msg"`
+	NotAllowCode   string `yaml:"not_allow_code"`
 }
 
 type LeakyBucketI interface {
@@ -23,6 +25,8 @@ type LeakyBucketI interface {
 	GetKeyField() string
 	GetType() string
 	GetAllowOnFailure() bool
+	GetNotAllowMsg() string
+	GetNotAllowCode() string
 }
 
 type leakyBucketService struct {
@@ -35,6 +39,8 @@ type leakyBucketService struct {
 	AllowOnFailure bool
 	Id             int
 	RedisClient    *redis.Client
+	NotAllowMsg    string
+	NotAllowCode   string
 }
 
 func NewLeakyBucket(bucket *LeakyBucket, id int, redisClient *redis.Client) (LeakyBucketI, error) {
@@ -53,6 +59,8 @@ func NewLeakyBucket(bucket *LeakyBucket, id int, redisClient *redis.Client) (Lea
 		RedisClient:    redisClient,
 		Type:           bucket.Type,
 		Id:             id,
+		NotAllowMsg:    bucket.NotAllowMsg,
+		NotAllowCode:   bucket.NotAllowCode,
 	}, nil
 }
 
@@ -105,6 +113,14 @@ func (l *leakyBucketService) AllowRequest(ctx context.Context, key string) bool 
 	}
 
 	return true
+}
+
+func (l *leakyBucketService) GetNotAllowMsg() string {
+	return l.NotAllowMsg
+}
+
+func (l *leakyBucketService) GetNotAllowCode() string {
+	return l.NotAllowCode
 }
 
 func (l *LeakyBucket) Validate() (string, bool) {

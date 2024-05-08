@@ -21,17 +21,19 @@ go get -u github.com/golanguzb70/ratelimiter
 
 ## Configuration fields.
 ```
-+------------------+------------------------------------+----------------------------------------------------------+
-| Columns          | types  |  enum values              | description                                              |
-|------------------|------------------------------------|----------------------------------------------------------|
-| method           | string |  GET, POST, PUT, DELETE   | http method                                              |
-| path             | string |  *                        | http full path                                           |
-| limit            | uint   |  *                        | the request limit per interval                           |
-| interval         | string |  second, minute, hour     | interval type                                            |
-| type             | string |  ip, jwt, header, query   | according to this field rate limiting key is choosen     |
-| key_field        | string |  *                        | this is name of key of jwt, header or query              |
-| allow_on_failure | bool   |  *                        | if true and failure occurs, the request is served        |
-+------------------------------------------------------------------------------------------------------------------+
++------------------+------------------------------------+------------------------------------------------------+
+| Columns          | types  |  enum values              | description                                          |
+|------------------|------------------------------------|------------------------------------------------------|
+| method           | string |  GET, POST, PUT, DELETE   | http method                                          |
+| path             | string |  *                        | http full path                                       |
+| limit            | uint   |  *                        | the request limit per interval                       |
+| interval         | string |  second, minute, hour     | interval type                                        |
+| type             | string |  ip, jwt, header, query   | according to this field rate limiting key is choosen |
+| key_field        | string |  *                        | this is name of key of jwt, header or query          |
+| allow_on_failure | bool   |  *                        | if true and failure occurs, the request is served    |
+| not_allow_msg    | string |  *                        | this message is sent to client when disallowed       |
+| not_allow_code   | string |  *                        | this code is sent to client when disallowed          |
++--------------------------------------------------------------------------------------------------------------+
 ```
 
 ## Code level config example.
@@ -49,6 +51,8 @@ rateLimiterConfig := &ratelimiter.Config{
 				Type:           "leaky_bucket",
 				KeyField:       "session_id",
 				AllowOnFailure: true,
+				NotAllowMsg:    "Sorry we prefer to serve more people instead of serving you more",
+				NotAllowCode:   "TOO_MANY_REQUESTS"
 			},
 		},
 	}
@@ -76,6 +80,8 @@ leaky_buckets:
     type: jwt
     jwt_key: session_id
     allow_on_failure: false
+	not_allow_msg: "Sorry we prefer to serve more people instead of serving you more"
+	not_allow_code: "TOO_MANY_REQUESTS"
 ```
 
 ## Gin middleware example

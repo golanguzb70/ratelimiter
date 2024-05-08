@@ -87,8 +87,10 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 				if bucket.GetAllowOnFailure() {
 					c.Next()
 				} else {
-					c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-					c.Abort()
+					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
 				}
 				return
 			}
@@ -98,8 +100,10 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 				if bucket.GetAllowOnFailure() {
 					c.Next()
 				} else {
-					c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid jwt key"})
-					c.Abort()
+					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
 				}
 				return
 			}
@@ -108,8 +112,10 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 		}
 
 		if !bucket.AllowRequest(c, key) {
-			c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests"})
-			c.Abort()
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code":    bucket.GetNotAllowCode(),
+				"message": bucket.GetNotAllowMsg(),
+			})
 			return
 		}
 
