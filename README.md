@@ -82,7 +82,7 @@ leaky_buckets:
     allow_on_failure: false
 	not_allow_msg: "Sorry we prefer to serve more people instead of serving you more"
 	not_allow_code: "TOO_MANY_REQUESTS"
-```
+``` 
 
 ## Gin middleware example
 ```
