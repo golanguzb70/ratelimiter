@@ -112,7 +112,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 		}
 
 		if !bucket.AllowRequest(c, key) {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
 				"code":    bucket.GetNotAllowCode(),
 				"message": bucket.GetNotAllowMsg(),
 			})
