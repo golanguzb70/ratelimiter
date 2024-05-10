@@ -72,16 +72,16 @@ redis_host: localhost
 redis_port: "6379"
 jwt_sign_in_key: "your_jwt_sign_in_key"
 leaky_buckets:
-  - name: "bucket1"
+  - name: bucket1
     method: "GET"
-    path: "/ping/:id"
+    path: /ping/:id
     limit: 10
     interval: minute
     type: jwt
-    jwt_key: session_id
+    key_field: session_id
     allow_on_failure: false
-	not_allow_msg: "Sorry we prefer to serve more people instead of serving you more"
-	not_allow_code: "TOO_MANY_REQUESTS"
+	not_allow_msg: Sorry we prefer to serve more people instead of serving you more
+	not_allow_code: TOO_MANY_REQUESTS
 ``` 
 
 ## Gin middleware example
