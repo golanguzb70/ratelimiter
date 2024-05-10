@@ -1,4 +1,4 @@
-module github.com/golanguzb70/rate-limiter
+module github.com/golanguzb70/ratelimiter
 
 go 1.20
 
