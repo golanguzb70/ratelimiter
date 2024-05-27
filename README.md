@@ -9,13 +9,13 @@ Rate limiter is a Golang package that makes it easy to implement rate limiting o
 # Getting started
 ## Getting ratelimiter
 With Go module support, simply add the following import
-```
+```go
 import "github.com/golanguzb70/ratelimiter"
 ```
 to your code, and then `go mod tidy` will automatically fetch the necessary dependencies
 
 Otherwise, run the following Go command to install the ratelimiter package
-```
+```go
 go get -u github.com/golanguzb70/ratelimiter
 ```
 
@@ -37,7 +37,7 @@ go get -u github.com/golanguzb70/ratelimiter
 ```
 
 ## Code level config example.
-```
+```go
 rateLimiterConfig := &ratelimiter.Config{
 		RedisHost:    "localhost",
 		RedisPort:    "6379",
@@ -59,7 +59,7 @@ rateLimiterConfig := &ratelimiter.Config{
 ```
 
 ## Parse config from yaml file.
-```
+```go
 cfg, err := ratelimiter.ParseYamlFile("rate-limit.yaml")
 if err != nil {
     // handle error
@@ -67,7 +67,7 @@ if err != nil {
 ```
 
 ## YAML config file example.
-```
+```yaml
 redis_host: localhost
 redis_port: "6379"
 jwt_sign_in_key: "your_jwt_sign_in_key"
@@ -80,12 +80,12 @@ leaky_buckets:
     type: jwt
     key_field: session_id
     allow_on_failure: false
-	not_allow_msg: Sorry we prefer to serve more people instead of serving you more
-	not_allow_code: TOO_MANY_REQUESTS
+    not_allow_msg: Sorry we prefer to serve more people instead of serving you more
+    not_allow_code: TOO_MANY_REQUESTS
 ``` 
 
 ## Gin middleware example
-```
+```go
 package main
 
 import (
