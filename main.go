@@ -1,13 +1,17 @@
 package ratelimiter
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/cast"
 	"gopkg.in/yaml.v3"
 )
 
@@ -109,6 +113,35 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 			}
 		case "query":
 			key = c.Query(bucket.GetKeyField())
+		case "body":
+			body := map[string]interface{}{}
+			err := c.ShouldBindJSON(&body)
+			if err != nil {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+			}
+
+			newBodyBytes, err := json.Marshal(body)
+			if err != nil {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+			}
+
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(newBodyBytes))
+
+			key = cast.ToString(body[bucket.GetKeyField()])
 		}
 
 		if !bucket.AllowRequest(c, key) {
