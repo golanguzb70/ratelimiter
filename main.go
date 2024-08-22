@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/cast"
 	"gopkg.in/yaml.v3"
 )
 
@@ -141,7 +140,7 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(newBodyBytes))
 
-			key = cast.ToString(body[bucket.GetKeyField()])
+			key = body[bucket.GetKeyField()].(string)
 		}
 
 		if !bucket.AllowRequest(c, key) {
