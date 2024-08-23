@@ -140,7 +140,18 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(newBodyBytes))
 
-			key = body[bucket.GetKeyField()].(string)
+			key, ok = body[bucket.GetKeyField()].(string)
+			if !ok {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+				return
+			}
 		}
 
 		if !bucket.AllowRequest(c, key) {
