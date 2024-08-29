@@ -135,7 +135,7 @@ func (l *LeakyBucket) Validate() (string, bool) {
 		return "RequestLimit must be greater than 0", false
 	case l.Interval != "second" && l.Interval != "minute" && l.Interval != "hour":
 		return "DurationType must be one of second, minute, hour", false
-	case l.Type != "ip" && l.Type != "jwt" && l.Type != "header" && l.Type != "query":
+	case l.Type != "ip" && l.Type != "jwt" && l.Type != "header" && l.Type != "query" && l.Type != "body":
 		return "Type must be one of ip, jwt, header, query", false
 	}
 
