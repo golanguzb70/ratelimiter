@@ -1,7 +1,10 @@
 package ratelimiter
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -109,6 +112,46 @@ func (r *ratelimiter) GinMiddleware() gin.HandlerFunc {
 			}
 		case "query":
 			key = c.Query(bucket.GetKeyField())
+		case "body":
+			body := map[string]interface{}{}
+			err := c.ShouldBindJSON(&body)
+			if err != nil {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+			}
+
+			newBodyBytes, err := json.Marshal(body)
+			if err != nil {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+			}
+
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(newBodyBytes))
+
+			key, ok = body[bucket.GetKeyField()].(string)
+			if !ok {
+				if bucket.GetAllowOnFailure() {
+					c.Next()
+				} else {
+					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+						"code":    bucket.GetNotAllowCode(),
+						"message": bucket.GetNotAllowMsg(),
+					})
+				}
+				return
+			}
 		}
 
 		if !bucket.AllowRequest(c, key) {

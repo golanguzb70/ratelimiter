@@ -21,19 +21,19 @@ go get -u github.com/golanguzb70/ratelimiter
 
 ## Configuration fields.
 ```
-+------------------+------------------------------------+------------------------------------------------------+
-| Columns          | types  |  enum values              | description                                          |
-|------------------|------------------------------------|------------------------------------------------------|
-| method           | string |  GET, POST, PUT, DELETE   | http method                                          |
-| path             | string |  *                        | http full path                                       |
-| limit            | uint   |  *                        | the request limit per interval                       |
-| interval         | string |  second, minute, hour     | interval type                                        |
-| type             | string |  ip, jwt, header, query   | according to this field rate limiting key is choosen |
-| key_field        | string |  *                        | this is name of key of jwt, header or query          |
-| allow_on_failure | bool   |  *                        | if true and failure occurs, the request is served    |
-| not_allow_msg    | string |  *                        | this message is sent to client when disallowed       |
-| not_allow_code   | string |  *                        | this code is sent to client when disallowed          |
-+--------------------------------------------------------------------------------------------------------------+
++------------------+----------------------------------------+------------------------------------------------------+
+| Columns          | types  |  enum values                  | description                                          |
+|------------------|----------------------------------------|------------------------------------------------------|
+| method           | string |  GET, POST, PUT, DELETE       | http method                                          |
+| path             | string |  *                            | http full path                                       |
+| limit            | uint   |  *                            | the request limit per interval                       |
+| interval         | string |  second, minute, hour         | interval type                                        |
+| type             | string |  ip, jwt, header, query, body | according to this field rate limiting key is choosen |
+| key_field        | string |  *                            | this is name of key of jwt, header, query or body    |
+| allow_on_failure | bool   |  *                            | if true and failure occurs, the request is served    |
+| not_allow_msg    | string |  *                            | this message is sent to client when disallowed       |
+| not_allow_code   | string |  *                            | this code is sent to client when disallowed          |
++------------------------------------------------------------------------------------------------------------------+
 ```
 
 ## Code level config example.
